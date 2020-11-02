@@ -605,9 +605,9 @@ public class IncidentProcessTest extends JbpmBaseTestCase {
 
         assertProcessInstanceCompleted(pId);
 
-        assertNodeTriggered(pId, "Update Incident Delivered");
+        assertNodeTriggered(pId, "Update Incident Delivered", "Update Responder Status");
 
-        verify(workItemHandlers.get("SendMessage"), times(6)).executeWorkItem(any(WorkItem.class), any(WorkItemManager.class));
+        verify(workItemHandlers.get("SendMessage"), times(7)).executeWorkItem(any(WorkItem.class), any(WorkItemManager.class));
 
         // SendMessageTask
         Map<String, Object> params = sendMessageWihParameters.get(5);
@@ -618,6 +618,12 @@ public class IncidentProcessTest extends JbpmBaseTestCase {
         Incident payload = (Incident) params.get("Payload");
         assertThat(payload.getId(), equalTo(incidentId));
         assertThat(payload.getStatus(), equalTo("Delivered"));
+
+        params = sendMessageWihParameters.get(6);
+        assertThat(params, notNullValue());
+        assertThat(params.get("MessageType"), equalTo("UpdateResponder"));
+        assertThat(params.get("Payload"), notNullValue());
+        assertThat(params.get("Payload"), is(instanceOf(Mission.class)));
     }
 
     /**
